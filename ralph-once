@@ -1,6 +1,6 @@
 #!/bin/bash
 # Ralph HITL — Single iteration (interactive)
-# Supports local mode (--spec) and GitHub mode (--prd or auto-detect)
+# Supports local mode (--spec) and GitHub mode (--prd)
 
 set -e
 

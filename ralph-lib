@@ -7,8 +7,7 @@ show_afk_usage() {
 	cat <<'USAGE'
 Usage:
   ralph-afk --spec <dir> --iterations <n|all>    Local mode
-  ralph-afk --iterations <n|all>                  GitHub mode (auto-detect PRD)
-  ralph-afk --prd <number> --iterations <n|all>   GitHub mode (specific PRD)
+  ralph-afk --prd <number> --iterations <n|all>   GitHub mode
 
 Options:
   --spec <dir>          Path to local spec directory (enables local mode)
@@ -21,8 +20,7 @@ show_once_usage() {
 	cat <<'USAGE'
 Usage:
   ralph-once --spec <dir>                         Local mode
-  ralph-once                                      GitHub mode (auto-detect PRD)
-  ralph-once --prd <number>                       GitHub mode (specific PRD)
+  ralph-once --prd <number>                       GitHub mode
 
 Options:
   --spec <dir>          Path to local spec directory (enables local mode)
