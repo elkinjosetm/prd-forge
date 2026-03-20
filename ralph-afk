@@ -14,6 +14,14 @@ if ! parse_args "$@"; then
 	exit 1
 fi
 
+# Require --spec or --prd
+if [ -z "$SPEC_DIR" ] && [ -z "$PRD_NUMBER" ]; then
+	echo "Error: --spec or --prd is required"
+	echo ""
+	show_afk_usage
+	exit 1
+fi
+
 # Require --iterations for afk mode
 if [ -z "$MAX_ITERATIONS" ]; then
 	echo "Error: --iterations is required"
