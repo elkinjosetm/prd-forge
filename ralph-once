@@ -8,8 +8,16 @@ set -e
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 source "$SCRIPT_DIR/ralph-lib"
 
-# Parse arguments — no flags = valid (GitHub auto-detect)
+# Parse arguments
 if ! parse_args "$@"; then
+	show_once_usage
+	exit 1
+fi
+
+# Require --spec or --prd
+if [ -z "$SPEC_DIR" ] && [ -z "$PRD_NUMBER" ]; then
+	echo "Error: --spec or --prd is required"
+	echo ""
 	show_once_usage
 	exit 1
 fi
