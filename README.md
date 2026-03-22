@@ -1,6 +1,6 @@
-# Forge Orchestrator
+# PRD Forge
 
-A Python CLI that drives PRD-driven development with Claude Code. You write the spec, Forge executes the issues one by one.
+A CLI that drives PRD-driven development with Claude Code. You write the spec, Forge executes the issues one by one.
 
 ## Workflow
 
@@ -17,7 +17,7 @@ Steps 1–3 are Claude Code skills that ship in this repo under `skills/`. Step 
 
 ```sh
 brew install pipx
-pipx install git+https://github.com/elkinjosetm/forge.git
+pipx install git+https://github.com/elkinjosetm/prd-forge.git
 ```
 
 This makes the `forge` command globally available — no venv activation needed.
@@ -25,8 +25,8 @@ This makes the `forge` command globally available — no venv activation needed.
 ### Development install
 
 ```sh
-git clone https://github.com/elkinjosetm/forge.git
-cd orchestrator
+git clone https://github.com/elkinjosetm/prd-forge.git
+cd prd-forge
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -e .
@@ -115,9 +115,9 @@ Works with GitHub issues instead of local files:
 The `skills/` directory contains Claude Code skills for steps 1–3 of the workflow. Install them by symlinking into your Claude Code skills directory:
 
 ```sh
-ln -s /path/to/orchestrator/skills/grill-me ~/.claude/skills/grill-me
-ln -s /path/to/orchestrator/skills/write-a-prd ~/.claude/skills/write-a-prd
-ln -s /path/to/orchestrator/skills/prd-to-issues ~/.claude/skills/prd-to-issues
+ln -s /path/to/prd-forge/skills/grill-me ~/.claude/skills/grill-me
+ln -s /path/to/prd-forge/skills/write-a-prd ~/.claude/skills/write-a-prd
+ln -s /path/to/prd-forge/skills/prd-to-issues ~/.claude/skills/prd-to-issues
 ```
 
 Once linked, they're available as `/grill-me`, `/write-a-prd`, and `/prd-to-issues` in any Claude Code session.
