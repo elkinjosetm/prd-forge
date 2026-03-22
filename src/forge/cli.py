@@ -5,8 +5,9 @@ from typing import Optional
 
 import typer
 
+from forge.github import GitHubSource
 from forge.local import LocalSource
-from forge.prompt import render_local_once
+from forge.prompt import render_github_once, render_local_once
 from forge.runner import run_afk_loop, run_interactive
 
 app = typer.Typer(
@@ -118,7 +119,30 @@ def prd(
     ),
 ) -> None:
     """Execute issues from a GitHub PRD."""
-    _validate_iterations(mode, iterations)
-    typer.echo(f"Source:     prd")
-    typer.echo(f"Identifier: {number}")
-    typer.echo(f"Mode:       {mode.value}")
+    parsed_iterations = _validate_iterations(mode, iterations)
+
+    source = GitHubSource(number)
+
+    if mode == Mode.once:
+        issue = source.get_next_issue()
+
+        if issue is None:
+            typer.echo("All issues complete!")
+            raise typer.Exit()
+
+        remaining, total = source.get_remaining_count()
+        typer.echo(f"Issue #{issue.number}: {issue.title}")
+        typer.echo(f"Remaining: {remaining}/{total}")
+        typer.echo("")
+
+        prompt = render_github_once(
+            prd_content=source.get_prd_content(),
+            issue_number=issue.number,
+            issue_title=issue.title,
+            issue_content=issue.body,
+        )
+        run_interactive(prompt)
+
+    elif mode == Mode.afk:
+        typer.echo("Error: afk mode for GitHub PRDs is not yet implemented.")
+        raise typer.Exit(code=1)

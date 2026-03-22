@@ -1,11 +1,11 @@
-You are executing a single task from a structured spec.
+You are executing a single task from {task_source}.
 
 ## Instructions
 1. Read the PRD below — it contains the full context, architecture, and constraints.
 2. Read the issue spec below — it contains exactly what to build and the acceptance criteria.
 3. Implement everything described in the issue spec.
 4. Verify your work compiles and passes any validation described in the issue.
-5. Commit all changes in a single commit with message: <concise description of what was built>
+5. Commit all changes in a single commit with message: <concise description of what was built>{commit_suffix}
 {bookkeeping}
 IMPORTANT:
 - Do ONLY this one issue. Stop after committing{bookkeeping_stop}.
