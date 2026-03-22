@@ -20,7 +20,11 @@ brew install pipx
 pipx install git+https://github.com/elkinjosetm/prd-forge.git
 ```
 
-This makes the `forge` command globally available — no venv activation needed.
+This makes the `forge` command globally available — no venv activation needed. Then install the Claude Code skills:
+
+```sh
+forge setup-skills
+```
 
 ### Development install
 
@@ -32,7 +36,11 @@ source .venv/bin/activate
 pip install -e .
 ```
 
-This installs in editable mode for contributors. You'll need to `source .venv/bin/activate` in each new shell session.
+This installs in editable mode for contributors. You'll need to `source .venv/bin/activate` in each new shell session. Then install the Claude Code skills:
+
+```sh
+forge setup-skills
+```
 
 ## Usage
 
