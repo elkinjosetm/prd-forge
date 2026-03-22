@@ -7,7 +7,7 @@ import typer
 
 from forge.github import GitHubSource
 from forge.local import LocalSource
-from forge.prompt import render_github_once, render_local_once
+from forge.prompt import render_github_afk, render_github_once, render_local_afk, render_local_once
 from forge.runner import run_afk_loop, run_interactive
 
 app = typer.Typer(
@@ -95,10 +95,17 @@ def spec(
         run_interactive(prompt)
 
     elif mode == Mode.afk:
+        prd_content = source.get_prd_content()
         run_afk_loop(
             source=source,
             iterations=parsed_iterations,
-            prd_content=source.get_prd_content(),
+            render_prompt=lambda issue: render_local_afk(
+                prd_content=prd_content,
+                issue_number=issue.number,
+                issue_filename=issue.filename,
+                issue_content=issue.content,
+            ),
+            display_name=lambda issue: issue.filename,
         )
 
 
@@ -144,5 +151,15 @@ def prd(
         run_interactive(prompt)
 
     elif mode == Mode.afk:
-        typer.echo("Error: afk mode for GitHub PRDs is not yet implemented.")
-        raise typer.Exit(code=1)
+        prd_content = source.get_prd_content()
+        run_afk_loop(
+            source=source,
+            iterations=parsed_iterations,
+            render_prompt=lambda issue: render_github_afk(
+                prd_content=prd_content,
+                issue_number=issue.number,
+                issue_title=issue.title,
+                issue_content=issue.body,
+            ),
+            display_name=lambda issue: issue.title,
+        )

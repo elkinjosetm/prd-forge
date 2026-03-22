@@ -6,11 +6,9 @@ import subprocess
 import sys
 import time
 from dataclasses import dataclass
+from typing import Any, Callable
 
 import typer
-
-from forge.local import LocalSource
-from forge.prompt import render_local_afk
 
 
 @dataclass
@@ -48,14 +46,15 @@ def run_headless(prompt: str) -> int:
 
 
 def run_afk_loop(
-    source: LocalSource,
+    source: Any,
     iterations: int | str,
-    prd_content: str,
+    render_prompt: Callable[[Any], str],
+    display_name: Callable[[Any], str],
 ) -> list[IterationResult]:
-    """Run the autonomous afk loop over local spec issues.
+    """Run the autonomous afk loop over issues from any source.
 
     Spawns headless Claude Code sessions, handles bookkeeping on success,
-    and tracks results per issue.
+    and tracks results per issue. Works with both LocalSource and GitHubSource.
     """
     results: list[IterationResult] = []
     session_start = time.monotonic()
@@ -73,18 +72,14 @@ def run_afk_loop(
             break
 
         iteration += 1
+        name = display_name(issue)
         remaining, total = source.get_remaining_count()
         typer.echo(f"--- Iteration {iteration} ---")
-        typer.echo(f"Issue {issue.number}: {issue.filename}")
+        typer.echo(f"Issue {issue.number}: {name}")
         typer.echo(f"Remaining: {remaining}/{total}")
         typer.echo("")
 
-        prompt = render_local_afk(
-            prd_content=prd_content,
-            issue_number=issue.number,
-            issue_filename=issue.filename,
-            issue_content=issue.content,
-        )
+        prompt = render_prompt(issue)
 
         iter_start = time.monotonic()
         exit_code = run_headless(prompt)
@@ -95,7 +90,7 @@ def run_afk_loop(
             typer.echo(f"Issue {issue.number}: completed ({_fmt_time(elapsed)})")
             results.append(IterationResult(
                 issue_number=issue.number,
-                issue_filename=issue.filename,
+                issue_filename=name,
                 success=True,
                 elapsed_seconds=elapsed,
             ))
@@ -103,7 +98,7 @@ def run_afk_loop(
             typer.echo(f"Issue {issue.number}: failed (exit code {exit_code}, {_fmt_time(elapsed)})")
             results.append(IterationResult(
                 issue_number=issue.number,
-                issue_filename=issue.filename,
+                issue_filename=name,
                 success=False,
                 elapsed_seconds=elapsed,
             ))

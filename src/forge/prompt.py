@@ -99,3 +99,24 @@ def render_github_once(
         bookkeeping=bookkeeping,
         bookkeeping_stop=" and the bookkeeping step",
     )
+
+
+def render_github_afk(
+    *,
+    prd_content: str,
+    issue_number: int,
+    issue_title: str,
+    issue_content: str,
+) -> str:
+    """Render the prompt for GitHub PRD in afk mode (no bookkeeping)."""
+    template = _load_template()
+    return template.format(
+        task_source="a GitHub issue",
+        prd_content=prd_content,
+        issue_number=issue_number,
+        issue_filename=issue_title,
+        issue_content=issue_content,
+        commit_suffix=f" (#{issue_number})",
+        bookkeeping="",
+        bookkeeping_stop="",
+    )
