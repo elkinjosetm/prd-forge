@@ -14,10 +14,12 @@ Steps 1–3 are Claude Code skills that ship in this repo under `skills/`. Step 
 ## Installation
 
 ```sh
+python3 -m venv .venv
+source .venv/bin/activate
 pip install -e .
 ```
 
-This makes the `forge` command available in your terminal.
+This makes the `forge` command available inside the virtual environment. You'll need to `source .venv/bin/activate` in each new shell session.
 
 ## Usage
 
