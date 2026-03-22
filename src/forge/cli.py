@@ -234,10 +234,11 @@ def _get_skills_source_dir() -> Path:
     return Path(__file__).resolve().parent / "skills"
 
 
-def _get_skills_target_dir() -> Path:
-    """Return ~/.claude/skills/, creating it if needed."""
+def _get_skills_target_dir(*, create: bool = True) -> Path:
+    """Return ~/.claude/skills/, optionally creating it."""
     target = Path.home() / ".claude" / "skills"
-    target.mkdir(parents=True, exist_ok=True)
+    if create:
+        target.mkdir(parents=True, exist_ok=True)
     return target
 
 
@@ -257,7 +258,7 @@ def setup_skills() -> None:
         target = target_dir / name
 
         if not source.is_dir():
-            typer.echo(f"Warning: skill source not found: {source}")
+            typer.echo(f"Warning: skill source not found: {source}", err=True)
             continue
 
         if target.is_symlink():
@@ -266,12 +267,13 @@ def setup_skills() -> None:
                 # Already points to the right place — skip silently
                 continue
             typer.echo(
-                f"Warning: {target} already exists as symlink -> {target.readlink()}. Skipping."
+                f"Warning: {target} already exists as symlink -> {target.readlink()}. Skipping.",
+                err=True,
             )
             continue
 
         if target.exists():
-            typer.echo(f"Warning: {target} already exists (not a symlink). Skipping.")
+            typer.echo(f"Warning: {target} already exists (not a symlink). Skipping.", err=True)
             continue
 
         target.symlink_to(source)
@@ -282,7 +284,9 @@ def setup_skills() -> None:
 def remove_skills() -> None:
     """Remove Forge skill symlinks from ~/.claude/skills/."""
     source_dir = _get_skills_source_dir()
-    target_dir = _get_skills_target_dir()
+    target_dir = _get_skills_target_dir(create=False)
+    if not target_dir.is_dir():
+        return
 
     for name in SKILL_NAMES:
         target = target_dir / name

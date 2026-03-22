@@ -17,7 +17,7 @@ def skills_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Patch the target directory to a temp location and return it."""
     target = tmp_path / ".claude" / "skills"
     target.mkdir(parents=True)
-    monkeypatch.setattr("forge.cli._get_skills_target_dir", lambda: target)
+    monkeypatch.setattr("forge.cli._get_skills_target_dir", lambda *, create=True: target)
     return target
 
 
@@ -134,6 +134,15 @@ class TestRemoveSkills:
         for name in SKILL_NAMES:
             assert (skills_env / name).exists()
             assert (skills_env / name).read_text() == "not a skill"
+
+    def test_noop_when_target_dir_missing(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+        nonexistent = tmp_path / "does-not-exist"
+        monkeypatch.setattr("forge.cli._get_skills_target_dir", lambda *, create=True: nonexistent)
+
+        result = runner.invoke(app, ["remove-skills"])
+        assert result.exit_code == 0
+        assert result.output.strip() == ""
+        assert not nonexistent.exists()
 
     def test_regular_directories_not_removed(self, skills_env: Path) -> None:
         for name in SKILL_NAMES:
