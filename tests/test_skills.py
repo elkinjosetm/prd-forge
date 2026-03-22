@@ -88,3 +88,59 @@ class TestSetupSkillsConflicts:
         result = runner.invoke(app, ["setup-skills"])
         assert result.exit_code == 0
         assert "not a symlink" in result.output
+
+
+# --------------- Remove skills ---------------
+
+
+class TestRemoveSkills:
+    def test_removes_forge_symlinks(self, skills_env: Path) -> None:
+        # First create the symlinks
+        runner.invoke(app, ["setup-skills"])
+        for name in SKILL_NAMES:
+            assert (skills_env / name).is_symlink()
+
+        result = runner.invoke(app, ["remove-skills"])
+        assert result.exit_code == 0
+        for name in SKILL_NAMES:
+            assert not (skills_env / name).exists()
+            assert f"Removed {name}" in result.output
+
+    def test_leaves_non_forge_symlinks(self, skills_env: Path, tmp_path: Path) -> None:
+        other_dir = tmp_path / "other-skill"
+        other_dir.mkdir()
+        for name in SKILL_NAMES:
+            (skills_env / name).symlink_to(other_dir)
+
+        result = runner.invoke(app, ["remove-skills"])
+        assert result.exit_code == 0
+        # All symlinks should still be there — they don't point to Forge
+        for name in SKILL_NAMES:
+            assert (skills_env / name).is_symlink()
+            assert (skills_env / name).readlink() == other_dir
+
+    def test_missing_paths_no_error(self, skills_env: Path) -> None:
+        # Nothing exists at the target paths
+        result = runner.invoke(app, ["remove-skills"])
+        assert result.exit_code == 0
+        assert result.output.strip() == ""
+
+    def test_regular_files_not_removed(self, skills_env: Path) -> None:
+        for name in SKILL_NAMES:
+            (skills_env / name).write_text("not a skill")
+
+        result = runner.invoke(app, ["remove-skills"])
+        assert result.exit_code == 0
+        for name in SKILL_NAMES:
+            assert (skills_env / name).exists()
+            assert (skills_env / name).read_text() == "not a skill"
+
+    def test_regular_directories_not_removed(self, skills_env: Path) -> None:
+        for name in SKILL_NAMES:
+            (skills_env / name).mkdir()
+
+        result = runner.invoke(app, ["remove-skills"])
+        assert result.exit_code == 0
+        for name in SKILL_NAMES:
+            assert (skills_env / name).is_dir()
+            assert not (skills_env / name).is_symlink()

@@ -276,3 +276,26 @@ def setup_skills() -> None:
 
         target.symlink_to(source)
         typer.echo(f"Linked {name} -> {source}")
+
+
+@app.command("remove-skills")
+def remove_skills() -> None:
+    """Remove Forge skill symlinks from ~/.claude/skills/."""
+    source_dir = _get_skills_source_dir()
+    target_dir = _get_skills_target_dir()
+
+    for name in SKILL_NAMES:
+        target = target_dir / name
+
+        if not target.is_symlink():
+            # Doesn't exist or is a regular file/directory — skip silently
+            continue
+
+        # Only remove if it points into the Forge package
+        resolved = target.resolve()
+        expected = (source_dir / name).resolve()
+        if resolved != expected:
+            continue
+
+        target.unlink()
+        typer.echo(f"Removed {name}")
