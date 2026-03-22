@@ -1,10 +1,14 @@
 """Forge CLI — PRD-driven development workflow orchestrator."""
 
+from __future__ import annotations
+
 from enum import Enum
 from typing import Optional
 
+import questionary
 import typer
 
+from forge.git import checkout_or_create_branch, ensure_clean_tree
 from forge.github import GitHubSource
 from forge.local import LocalSource
 from forge.prompt import render_github_afk, render_github_once, render_local_afk, render_local_once
@@ -34,6 +38,26 @@ def _parse_iterations(value: Optional[str]) -> Optional[int | str]:
     if n <= 0:
         raise typer.BadParameter(f"Must be a positive integer or 'all', got '{value}'")
     return n
+
+
+def _pre_execution(suggested_branch: str) -> str:
+    """Run pre-execution prompts and git checks. Returns the base branch."""
+    ensure_clean_tree()
+
+    branch = questionary.text(
+        "Branch name:",
+        default=suggested_branch,
+    ).unsafe_ask()
+
+    base_branch = questionary.text(
+        "Base branch / PR target:",
+        default="main",
+    ).unsafe_ask()
+
+    checkout_or_create_branch(branch)
+    typer.echo("")
+
+    return base_branch
 
 
 def _validate_iterations(mode: Mode, iterations_raw: Optional[str]) -> Optional[int | str]:
@@ -72,6 +96,7 @@ def spec(
     parsed_iterations = _validate_iterations(mode, iterations)
 
     source = LocalSource(name)
+    _base_branch = _pre_execution(f"feature/{name}")
 
     if mode == Mode.once:
         issue = source.get_next_issue()
@@ -129,6 +154,7 @@ def prd(
     parsed_iterations = _validate_iterations(mode, iterations)
 
     source = GitHubSource(number)
+    _base_branch = _pre_execution(f"prd/{number}")
 
     if mode == Mode.once:
         issue = source.get_next_issue()
