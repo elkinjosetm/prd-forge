@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-from forge.local import Issue, LocalSource
+from forge.local import LocalSource
 
 
 @pytest.fixture()

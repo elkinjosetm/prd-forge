@@ -15,7 +15,9 @@ def ensure_clean_tree() -> None:
         text=True,
     )
     if result.stdout.strip():
-        typer.echo("Error: working tree has uncommitted changes. Commit or stash them first.")
+        typer.echo(
+            "Error: working tree has uncommitted changes. Commit or stash them first."
+        )
         raise typer.Exit(code=1)
 
 

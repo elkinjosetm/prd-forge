@@ -5,8 +5,9 @@ from __future__ import annotations
 import subprocess
 import sys
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
-from typing import Any, Callable
+from typing import Any
 
 import typer
 
@@ -88,20 +89,27 @@ def run_afk_loop(
         if exit_code == 0:
             source.complete_issue(issue)
             typer.echo(f"Issue {issue.number}: completed ({_fmt_time(elapsed)})")
-            results.append(IterationResult(
-                issue_number=issue.number,
-                issue_filename=name,
-                success=True,
-                elapsed_seconds=elapsed,
-            ))
+            results.append(
+                IterationResult(
+                    issue_number=issue.number,
+                    issue_filename=name,
+                    success=True,
+                    elapsed_seconds=elapsed,
+                )
+            )
         else:
-            typer.echo(f"Issue {issue.number}: failed (exit code {exit_code}, {_fmt_time(elapsed)})")
-            results.append(IterationResult(
-                issue_number=issue.number,
-                issue_filename=name,
-                success=False,
-                elapsed_seconds=elapsed,
-            ))
+            typer.echo(
+                f"Issue {issue.number}: failed "
+                f"(exit code {exit_code}, {_fmt_time(elapsed)})"
+            )
+            results.append(
+                IterationResult(
+                    issue_number=issue.number,
+                    issue_filename=name,
+                    success=False,
+                    elapsed_seconds=elapsed,
+                )
+            )
 
         typer.echo("")
 
@@ -131,7 +139,10 @@ def _print_summary(results: list[IterationResult], total_seconds: float) -> None
 
     for r in results:
         status = "completed" if r.success else "failed"
-        typer.echo(f"  Issue {r.issue_number} ({r.issue_filename}): {status} ({_fmt_time(r.elapsed_seconds)})")
+        elapsed = _fmt_time(r.elapsed_seconds)
+        typer.echo(
+            f"  Issue {r.issue_number} ({r.issue_filename}): {status} ({elapsed})"
+        )
 
     typer.echo("")
     typer.echo(f"Total: {len(results)} issues — {succeeded} completed, {failed} failed")

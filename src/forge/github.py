@@ -31,17 +31,15 @@ class GitHubSource:
         """Check that gh CLI is installed and authenticated."""
         try:
             subprocess.run(["gh", "--version"], capture_output=True, check=True)
-        except FileNotFoundError:
+        except FileNotFoundError as err:
             raise SystemExit(
                 "Error: gh CLI is not installed. See https://cli.github.com"
-            )
+            ) from err
         result = subprocess.run(
             ["gh", "auth", "status"], capture_output=True, text=True
         )
         if result.returncode != 0:
-            raise SystemExit(
-                "Error: gh CLI is not authenticated. Run 'gh auth login'."
-            )
+            raise SystemExit("Error: gh CLI is not authenticated. Run 'gh auth login'.")
 
     @staticmethod
     def _get_owner_repo() -> tuple[str, str]:
@@ -67,24 +65,26 @@ class GitHubSource:
         if match:
             return match.group(1), match.group(2)
 
-        raise SystemExit(
-            f"Error: could not parse owner/repo from remote URL: {url}"
-        )
+        raise SystemExit(f"Error: could not parse owner/repo from remote URL: {url}")
 
     def _validate_prd(self) -> None:
         """Validate that the PRD issue exists and has the 'prd' label."""
         result = subprocess.run(
             [
-                "gh", "issue", "view", str(self.prd_number),
-                "--json", "labels", "-q", ".labels[].name",
+                "gh",
+                "issue",
+                "view",
+                str(self.prd_number),
+                "--json",
+                "labels",
+                "-q",
+                ".labels[].name",
             ],
             capture_output=True,
             text=True,
         )
         if result.returncode != 0:
-            raise SystemExit(
-                f"Error: GitHub issue #{self.prd_number} not found."
-            )
+            raise SystemExit(f"Error: GitHub issue #{self.prd_number} not found.")
         labels = [label for label in result.stdout.strip().split("\n") if label]
         if "prd" not in labels:
             raise SystemExit(
@@ -95,8 +95,14 @@ class GitHubSource:
         """Fetch and return the PRD issue body."""
         result = subprocess.run(
             [
-                "gh", "issue", "view", str(self.prd_number),
-                "--json", "body", "-q", ".body",
+                "gh",
+                "issue",
+                "view",
+                str(self.prd_number),
+                "--json",
+                "body",
+                "-q",
+                ".body",
             ],
             capture_output=True,
             text=True,
@@ -123,19 +129,23 @@ query($owner: String!, $repo: String!, $number: Int!) {
 }"""
         result = subprocess.run(
             [
-                "gh", "api", "graphql",
-                "-F", f"owner={self.owner}",
-                "-F", f"repo={self.repo}",
-                "-F", f"number={self.prd_number}",
-                "-f", f"query={query}",
+                "gh",
+                "api",
+                "graphql",
+                "-F",
+                f"owner={self.owner}",
+                "-F",
+                f"repo={self.repo}",
+                "-F",
+                f"number={self.prd_number}",
+                "-f",
+                f"query={query}",
             ],
             capture_output=True,
             text=True,
         )
         if result.returncode != 0:
-            raise SystemExit(
-                f"Error fetching sub-issues: {result.stderr.strip()}"
-            )
+            raise SystemExit(f"Error fetching sub-issues: {result.stderr.strip()}")
         data = json.loads(result.stdout)
         return data["data"]["repository"]["issue"]["subIssues"]["nodes"]
 

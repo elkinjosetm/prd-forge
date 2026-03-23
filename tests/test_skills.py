@@ -17,7 +17,9 @@ def skills_env(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     """Patch the target directory to a temp location and return it."""
     target = tmp_path / ".claude" / "skills"
     target.mkdir(parents=True)
-    monkeypatch.setattr("forge.cli._get_skills_target_dir", lambda *, create=True: target)
+    monkeypatch.setattr(
+        "forge.cli._get_skills_target_dir", lambda *, create=True: target
+    )
     return target
 
 
@@ -58,7 +60,9 @@ class TestSetupSkills:
 
 
 class TestSetupSkillsConflicts:
-    def test_warns_symlink_pointing_elsewhere(self, skills_env: Path, tmp_path: Path) -> None:
+    def test_warns_symlink_pointing_elsewhere(
+        self, skills_env: Path, tmp_path: Path
+    ) -> None:
         other_dir = tmp_path / "other-skill"
         other_dir.mkdir()
         name = SKILL_NAMES[0]
@@ -135,9 +139,13 @@ class TestRemoveSkills:
             assert (skills_env / name).exists()
             assert (skills_env / name).read_text() == "not a skill"
 
-    def test_noop_when_target_dir_missing(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
+    def test_noop_when_target_dir_missing(
+        self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+    ) -> None:
         nonexistent = tmp_path / "does-not-exist"
-        monkeypatch.setattr("forge.cli._get_skills_target_dir", lambda *, create=True: nonexistent)
+        monkeypatch.setattr(
+            "forge.cli._get_skills_target_dir", lambda *, create=True: nonexistent
+        )
 
         result = runner.invoke(app, ["remove-skills"])
         assert result.exit_code == 0

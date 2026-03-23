@@ -4,15 +4,24 @@ from __future__ import annotations
 
 from enum import Enum
 from pathlib import Path
-from typing import Optional
 
 import questionary
 import typer
 
-from forge.git import checkout_or_create_branch, create_pr, ensure_clean_tree, push_branch
+from forge.git import (
+    checkout_or_create_branch,
+    create_pr,
+    ensure_clean_tree,
+    push_branch,
+)
 from forge.github import GitHubSource
 from forge.local import LocalSource
-from forge.prompt import render_github_afk, render_github_once, render_local_afk, render_local_once
+from forge.prompt import (
+    render_github_afk,
+    render_github_once,
+    render_local_afk,
+    render_local_once,
+)
 from forge.runner import IterationResult, run_afk_loop, run_interactive
 
 SKILL_NAMES = ["forge:interview", "forge:prd", "forge:issues"]
@@ -28,7 +37,7 @@ class Mode(str, Enum):
     afk = "afk"
 
 
-def _parse_iterations(value: Optional[str]) -> Optional[int | str]:
+def _parse_iterations(value: str | None) -> int | str | None:
     """Parse --iterations value: positive integer or 'all'."""
     if value is None:
         return None
@@ -36,8 +45,10 @@ def _parse_iterations(value: Optional[str]) -> Optional[int | str]:
         return "all"
     try:
         n = int(value)
-    except ValueError:
-        raise typer.BadParameter(f"Must be a positive integer or 'all', got '{value}'")
+    except ValueError as err:
+        raise typer.BadParameter(
+            f"Must be a positive integer or 'all', got '{value}'"
+        ) from err
     if n <= 0:
         raise typer.BadParameter(f"Must be a positive integer or 'all', got '{value}'")
     return n
@@ -84,14 +95,12 @@ def _push_and_create_pr(
     create_pr(title=pr_title, body=report, base_branch=base_branch)
 
 
-def _validate_iterations(mode: Mode, iterations_raw: Optional[str]) -> Optional[int | str]:
+def _validate_iterations(mode: Mode, iterations_raw: str | None) -> int | str | None:
     """Validate and parse iterations flag for the given mode."""
     iterations = _parse_iterations(iterations_raw)
 
     if mode == Mode.afk and iterations is None:
-        raise typer.BadParameter(
-            "--iterations / -i is required when mode is 'afk'."
-        )
+        raise typer.BadParameter("--iterations / -i is required when mode is 'afk'.")
 
     # In once mode, silently ignore iterations
     if mode == Mode.once:
@@ -102,14 +111,16 @@ def _validate_iterations(mode: Mode, iterations_raw: Optional[str]) -> Optional[
 
 @app.command()
 def spec(
-    name: str = typer.Argument(help="Name of the local spec (looks in .forge/<name>/)."),
+    name: str = typer.Argument(
+        help="Name of the local spec (looks in .forge/<name>/)."
+    ),
     mode: Mode = typer.Option(
         ...,
         "--mode",
         "-m",
         help="Execution mode: 'once' (interactive) or 'afk' (autonomous).",
     ),
-    iterations: Optional[str] = typer.Option(
+    iterations: str | None = typer.Option(
         None,
         "--iterations",
         "-i",
@@ -174,7 +185,7 @@ def prd(
         "-m",
         help="Execution mode: 'once' (interactive) or 'afk' (autonomous).",
     ),
-    iterations: Optional[str] = typer.Option(
+    iterations: str | None = typer.Option(
         None,
         "--iterations",
         "-i",
@@ -267,13 +278,16 @@ def setup_skills() -> None:
                 # Already points to the right place — skip silently
                 continue
             typer.echo(
-                f"Warning: {target} already exists as symlink -> {target.readlink()}. Skipping.",
+                f"Warning: {target} already exists as symlink "
+                f"-> {target.readlink()}. Skipping.",
                 err=True,
             )
             continue
 
         if target.exists():
-            typer.echo(f"Warning: {target} already exists (not a symlink). Skipping.", err=True)
+            typer.echo(
+                f"Warning: {target} already exists (not a symlink). Skipping.", err=True
+            )
             continue
 
         target.symlink_to(source)

@@ -4,7 +4,6 @@ from __future__ import annotations
 
 from importlib import resources
 
-
 _BOOKKEEPING_LOCAL_ONCE = """\
 6. After committing, mark this issue as complete by running:
    python3 -c "
@@ -18,7 +17,8 @@ with open('{status_path}', 'w') as f:
     f.write('\\n')
 "
 7. Append to the progress log:
-   echo "$(date '+%Y-%m-%d %H:%M') — Issue {issue_number} complete: {issue_filename}" >> {progress_path}"""
+   echo "$(date '+%Y-%m-%d %H:%M') — Issue {issue_number} complete: {issue_filename}" \
+>> {progress_path}"""
 
 _BOOKKEEPING_GITHUB_ONCE = """\
 6. After committing, close this GitHub issue by running:
