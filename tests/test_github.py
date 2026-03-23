@@ -13,17 +13,19 @@ from forge.github import GitHubIssue, GitHubSource
 
 def _graphql_response(nodes: list[dict]) -> str:
     """Build a GraphQL sub-issues response JSON string."""
-    return json.dumps({
-        "data": {
-            "repository": {
-                "issue": {
-                    "subIssues": {
-                        "nodes": nodes,
+    return json.dumps(
+        {
+            "data": {
+                "repository": {
+                    "issue": {
+                        "subIssues": {
+                            "nodes": nodes,
+                        }
                     }
                 }
             }
         }
-    })
+    )
 
 
 @pytest.fixture()
@@ -85,8 +87,14 @@ class TestPrdValidation:
             source._validate_prd()
             mock_run.assert_called_once_with(
                 [
-                    "gh", "issue", "view", "42",
-                    "--json", "labels", "-q", ".labels[].name",
+                    "gh",
+                    "issue",
+                    "view",
+                    "42",
+                    "--json",
+                    "labels",
+                    "-q",
+                    ".labels[].name",
                 ],
                 capture_output=True,
                 text=True,
@@ -100,7 +108,8 @@ class TestRepoExtraction:
     def test_parses_https_remote_url(self):
         with patch("forge.github.subprocess.run") as mock_run:
             mock_run.return_value = CompletedProcess(
-                args=[], returncode=0,
+                args=[],
+                returncode=0,
                 stdout="https://github.com/myowner/myrepo.git\n",
                 stderr="",
             )
@@ -111,7 +120,8 @@ class TestRepoExtraction:
     def test_parses_ssh_remote_url(self):
         with patch("forge.github.subprocess.run") as mock_run:
             mock_run.return_value = CompletedProcess(
-                args=[], returncode=0,
+                args=[],
+                returncode=0,
                 stdout="git@github.com:myowner/myrepo.git\n",
                 stderr="",
             )
@@ -131,7 +141,8 @@ class TestSubIssueFetching:
         ]
         with patch("forge.github.subprocess.run") as mock_run:
             mock_run.return_value = CompletedProcess(
-                args=[], returncode=0,
+                args=[],
+                returncode=0,
                 stdout=_graphql_response(nodes),
                 stderr="",
             )
@@ -148,7 +159,8 @@ class TestSubIssueFetching:
         ]
         with patch("forge.github.subprocess.run") as mock_run:
             mock_run.return_value = CompletedProcess(
-                args=[], returncode=0,
+                args=[],
+                returncode=0,
                 stdout=_graphql_response(nodes),
                 stderr="",
             )
@@ -165,7 +177,8 @@ class TestSubIssueFetching:
         ]
         with patch("forge.github.subprocess.run") as mock_run:
             mock_run.return_value = CompletedProcess(
-                args=[], returncode=0,
+                args=[],
+                returncode=0,
                 stdout=_graphql_response(nodes),
                 stderr="",
             )
@@ -174,7 +187,8 @@ class TestSubIssueFetching:
     def test_handles_empty_sub_issues_list(self, source):
         with patch("forge.github.subprocess.run") as mock_run:
             mock_run.return_value = CompletedProcess(
-                args=[], returncode=0,
+                args=[],
+                returncode=0,
                 stdout=_graphql_response([]),
                 stderr="",
             )
@@ -213,8 +227,14 @@ class TestContentFetching:
             assert content == "PRD body content"
             mock_run.assert_called_once_with(
                 [
-                    "gh", "issue", "view", "42",
-                    "--json", "body", "-q", ".body",
+                    "gh",
+                    "issue",
+                    "view",
+                    "42",
+                    "--json",
+                    "body",
+                    "-q",
+                    ".body",
                 ],
                 capture_output=True,
                 text=True,
@@ -223,11 +243,17 @@ class TestContentFetching:
 
     def test_fetches_issue_body_from_sub_issues(self, source):
         nodes = [
-            {"number": 5, "title": "Feature", "state": "OPEN", "body": "Issue body text"},
+            {
+                "number": 5,
+                "title": "Feature",
+                "state": "OPEN",
+                "body": "Issue body text",
+            },
         ]
         with patch("forge.github.subprocess.run") as mock_run:
             mock_run.return_value = CompletedProcess(
-                args=[], returncode=0,
+                args=[],
+                returncode=0,
                 stdout=_graphql_response(nodes),
                 stderr="",
             )
@@ -248,7 +274,8 @@ class TestRemainingCount:
         ]
         with patch("forge.github.subprocess.run") as mock_run:
             mock_run.return_value = CompletedProcess(
-                args=[], returncode=0,
+                args=[],
+                returncode=0,
                 stdout=_graphql_response(nodes),
                 stderr="",
             )
