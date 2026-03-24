@@ -75,6 +75,7 @@ forge prd 42 -m afk -i all
 |------|-------|----------|-------------|
 | `--mode` | `-m` | Always | `once` (interactive) or `afk` (autonomous) |
 | `--iterations` | `-i` | In `afk` mode | Positive integer or `all`. Silently ignored in `once` mode. |
+| `--version` | `-V` | — | Show version and exit. |
 
 ### Pre-execution prompts
 
