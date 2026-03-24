@@ -16,7 +16,12 @@ def default_branch() -> str:
     )
     if result.returncode == 0:
         # refs/remotes/origin/main → main
-        return result.stdout.strip().removeprefix("refs/remotes/origin/")
+        ref = result.stdout.strip()
+        prefix = "refs/remotes/origin/"
+        if ref.startswith(prefix):
+            branch = ref[len(prefix) :]
+            if branch:
+                return branch
     return "main"
 
 
