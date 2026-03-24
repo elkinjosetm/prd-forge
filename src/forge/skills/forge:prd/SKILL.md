@@ -43,11 +43,14 @@ If the project already has a `specs/` directory, default to suggesting local. Ot
 
 ### 6. Documentation impact check
 
-Before writing the PRD, ensure that documentation impact has been explicitly addressed. If the interview phase (steps 1–3) didn't already cover this, ask the user:
+Before writing the PRD, ensure that documentation impact has been explicitly addressed. Based on everything you've learned from the interview and codebase exploration, analyze which user-facing documentation artifacts (README, CLI help text, docs/ content) would be affected by these changes.
 
-> "Will any of these changes affect user-facing documentation? Think about the README, CLI help text, or any docs/ content. What would a user need to know differently after this ships?"
+Present your assessment to the user for confirmation:
 
-Record the answer for inclusion in the PRD's Documentation Impact section. If no documentation changes are needed, ask the user to briefly state why (e.g., "Internal refactor — no user-facing behavior changes").
+- If changes are needed, list the specific artifacts and what would need updating.
+- If no changes are needed, state why (e.g., "Internal refactor — no user-facing behavior changes") and ask the user to confirm.
+
+Record the confirmed answer for inclusion in the PRD's Documentation Impact section.
 
 This step is a gate — do not proceed to writing the PRD until documentation impact is resolved.
 
@@ -101,13 +104,13 @@ A list of testing decisions that were made. Include:
 
 ## Documentation Impact
 
-Describe which user-facing documentation artifacts are affected by these changes:
+Which user-facing documentation artifacts are affected by these changes:
 
 - **README** — Which sections need adding or updating?
 - **CLI help text** — Are commands, flags, or usage examples changing?
 - **docs/ content** — Are there deeper documentation files that need updating?
 
-If no documentation changes are needed, state why (e.g., "Internal refactor — no user-facing behavior changes").
+If no documentation changes are needed, state why (e.g., "Internal refactor — no user-facing behavior changes"). This assessment should be provided by the model based on its analysis and confirmed by the user during the interview.
 
 ## Out of Scope
 
