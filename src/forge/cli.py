@@ -278,7 +278,10 @@ def setup_skills(
     target: Path | None = typer.Option(
         None,
         "--target",
-        help="Claude root path (e.g. ~/.claude-acme). Skills are installed into <target>/skills/.",
+        help=(
+            "Claude root path (e.g. ~/.claude-acme)."
+            " Skills are installed into <target>/skills/."
+        ),
     ),
 ) -> None:
     """Install Forge skills as symlinks into ~/.claude/skills/."""
@@ -325,7 +328,10 @@ def remove_skills(
     target: Path | None = typer.Option(
         None,
         "--target",
-        help="Claude root path (e.g. ~/.claude-acme). Skills are removed from <target>/skills/.",
+        help=(
+            "Claude root path (e.g. ~/.claude-acme)."
+            " Skills are removed from <target>/skills/."
+        ),
     ),
 ) -> None:
     """Remove Forge skill symlinks from ~/.claude/skills/."""
