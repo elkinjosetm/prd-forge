@@ -18,11 +18,15 @@ Steps 1–3 are Claude Code skills installed via `forge setup-skills`. Step 4 is
 ```sh
 git clone https://github.com/elkinjosetm/prd-forge.git
 cd prd-forge
-brew install pipx   # if you don't have pipx yet
+
+# macOS
+brew install pipx
+# For Linux/Windows, see https://pipx.pypa.io/stable/installation/
+
 pipx install -e .
 ```
 
-This makes the `forge` command globally available — no venv activation needed. Because it's an editable install, pulling the latest `main` automatically updates the CLI. Then install the Claude Code skills:
+This makes the `forge` command globally available — no venv activation needed. Source code changes are picked up automatically; dependency or metadata changes (e.g., `pyproject.toml` edits) require running `pipx install -e . --force` again. Then install the Claude Code skills:
 
 ```sh
 forge setup-skills
