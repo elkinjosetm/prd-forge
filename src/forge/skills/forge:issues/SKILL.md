@@ -12,7 +12,7 @@ You are breaking a PRD into issues as part of the PRD Forge workflow. Each issue
 Determine where the PRD lives. Check these in order:
 
 1. **Conversation context** — If a PRD was created earlier in this conversation (via `/forge:prd` or otherwise), you already know where it is. State where you found it and confirm with the user.
-2. **Ask the user** — If no PRD is in context, ask: "Where is the PRD? Give me a local file path (e.g., `specs/ASC-1/prd.md`) or a GitHub issue number."
+2. **Ask the user** — If no PRD is in context, ask: "Where is the PRD? Give me a local file path (e.g., `.forge/ASC-1/prd.md`) or a GitHub issue number."
 
 If given a GitHub issue number, fetch it with `gh issue view <number>`.
 If given a local path, read the file.
@@ -63,7 +63,7 @@ Iterate until the user approves the breakdown.
 
 Default to **matching the PRD location**:
 
-- If the PRD is a **local file** (e.g., `specs/ASC-1/prd.md`), default to creating issues in the same directory under `issues/` (e.g., `specs/ASC-1/issues/01-short-title.md`).
+- If the PRD is a **local file** (e.g., `.forge/ASC-1/prd.md`), default to creating issues in the same directory under `issues/` (e.g., `.forge/ASC-1/issues/01-short-title.md`).
 - If the PRD is a **GitHub issue**, default to creating issues as GitHub issues using `gh issue create`.
 
 Confirm with the user before creating. If they want a different destination, respect that.
@@ -75,7 +75,7 @@ Confirm with the user before creating. If they want a different destination, res
 Create each issue as a markdown file in the issues directory. Use zero-padded numbering with a kebab-case descriptive suffix:
 
 ```
-specs/<name>/issues/
+.forge/<name>/issues/
   01-short-descriptive-title.md
   02-another-slice-title.md
   ...
@@ -88,7 +88,7 @@ Create issues in dependency order (blockers first). Use the local issue template
 
 ## Parent PRD
 
-See `specs/<name>/prd.md`
+See `.forge/<name>/prd.md`
 
 ## What to build
 
