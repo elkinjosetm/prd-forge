@@ -145,9 +145,9 @@ Skills remain as Claude Code skills. They are not invoked by the CLI on day one 
 
 ## Idea → Execution Pipeline
 
-Ideas flow through a label-driven pipeline tracked entirely in GitHub issues:
+Ideas can come from anywhere — a GitHub issue, a Jira ticket, a Slack thread, an MCP server, or just a conversation. Once an idea enters Forge's pipeline, it flows through these stages:
 
-1. **`roadmap`** — Raw idea. Created as a GitHub issue with the `roadmap` label.
+1. **`roadmap`** — Idea is captured as a GitHub issue with the `roadmap` label. This is the entry point into the tracked pipeline, regardless of where the idea originated.
 2. **Interview** — Stress-test the idea via `forge:interview`. Discussion happens on the roadmap issue.
 3. **`prd`** — Once interviewed, the roadmap issue is closed and a new issue is created with the `prd` label containing the full spec. The PRD links back to the roadmap issue for history.
 4. **Issues** — The PRD is broken into sub-issues (via `forge:issues`), either as local markdown files or GitHub sub-issues.

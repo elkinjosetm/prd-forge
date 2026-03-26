@@ -4,7 +4,7 @@ A CLI that drives PRD-driven development with Claude Code. You write the PRD, Fo
 
 ## Workflow
 
-1. **Idea** — Create a GitHub issue labeled `roadmap` to capture the idea.
+1. **Idea** — Capture the idea as a GitHub issue labeled `roadmap`. Ideas can come from anywhere — Jira tickets, Slack threads, MCP servers, or just a conversation.
 2. **`/forge:interview`** — Stress-test the idea. Get grilled on the plan until it's solid.
 3. **`/forge:prd`** — Turn the validated idea into a PRD. Closes the roadmap issue and creates a new `prd`-labeled issue with the full spec.
 4. **`/forge:issues`** — Break the PRD into independently-grabbable issues (local markdown files or GitHub sub-issues).
