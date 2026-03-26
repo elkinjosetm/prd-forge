@@ -143,88 +143,26 @@ Skills remain as Claude Code skills. They are not invoked by the CLI on day one 
 
 ---
 
-## Future Roadmap
+## Pipeline
 
-### Verification Agent Loop
+Ideas can come from anywhere — a GitHub issue, a Jira ticket, a Slack thread, an MCP server, or just a conversation. Forge doesn't prescribe where ideas originate. The pipeline starts once you're ready to act on one:
 
-After each issue is implemented, Forge spawns a second Claude Code session to verify the work against the issue's acceptance criteria.
+1. **Interview** — Stress-test the idea via `/forge:interview`.
+2. **PRD** — Write the spec via `/forge:prd`. Saves to a local file (`.forge/<name>/prd.md`) or a GitHub issue labeled `prd`.
+3. **Issues** — Break the PRD into vertical slices via `/forge:issues`. Creates local markdown files or GitHub sub-issues.
+4. **Execute** — `forge run` picks up the issues and implements them sequentially.
 
-**Flow per issue:**
+### Suggested practice: managing your idea backlog with GitHub labels
 
-1. Attempt 1 → spawn executor → spawn verifier
-2. Verifier returns PASS → bookkeeping, next issue
-3. Verifier returns FAIL → Attempt 2 with verifier's feedback, amend the commit
-4. Attempt 2 → spawn verifier
-5. PASS → bookkeeping, next issue
-6. FAIL → mark as **incorrect**, move on (no infinite loops)
+For projects using GitHub issues, we recommend a label-driven flow to track ideas before they enter the pipeline:
 
-**PR report with verification:**
+1. **Capture** — Create a GitHub issue with the `roadmap` label. This is the idea backlog entry, regardless of where the idea originated.
+2. **Interview** — Run `/forge:interview` on the idea. Discussion happens on the roadmap issue.
+3. **PRD** — Run `/forge:prd`. The roadmap issue is closed with a comment linking forward to the new PRD issue. The PRD issue is created with the `prd` label and links back to the roadmap issue for history.
+4. **Issues** — Run `/forge:issues`. Sub-issues are created and linked to the PRD issue.
+5. **Execute** — `forge run --github <prd_number>` implements the sub-issues. Each is closed on completion.
+6. **PR** — Forge pushes the branch and creates a PR. The PR body includes "Closes #prd_number", so the PRD issue is auto-closed when the PR merges.
 
-```markdown
-## Forge Report
-- #1 Setup database schema: completed (verified)
-- #2 API endpoints: completed (verified)
-- #3 Auth middleware: incorrect (failed verification: missing token refresh logic)
-- #4 Frontend components: completed (verified, 2nd attempt)
-```
+This keeps each artifact (idea, spec, implementation tickets) as a separate issue with a clear purpose and traceable lineage.
 
-The verifier's feedback is passed to the second executor attempt so it knows specifically what to fix. Maximum two attempts per issue — if the second attempt fails verification, the issue is marked incorrect and included in the PR report for human review.
-
-### Notification System
-
-Integrate with notification services (Pushover, Telegram, etc.) to alert the user when:
-
-- An `afk` run completes
-- An issue fails execution or verification
-- A PR is created and ready for review
-
-Especially important for daemon mode where nobody is watching.
-
-### Daemon / Service Mode
-
-A long-running process that lives on a server (home server or cloud), watching registered repos for new PRDs ready to execute.
-
-**Concept:**
-
-- Repos are registered with `forge register /path/to/repo`.
-- Registry stored in `~/.config/forge/`.
-- Daemon polls GitHub for new PRD issues (webhook-driven later).
-- When a new PRD is found: pick up issues, execute them, create PR, notify the user.
-- Claude Code runs on the server with its own session/account.
-- Repos are already cloned on the server — no cloning logic needed.
-
-This enables a workflow where the user creates issues from any device, and Forge on the server picks them up, works on them, creates a PR, and sends a notification for review.
-
-**Start with polling, evolve to webhooks.**
-
-### Skill Launcher
-
-Allow Forge to launch Claude Code skills as subcommands:
-
-```
-forge plan
-```
-
-This would spawn a Claude Code session that chains through grill-me → write-a-prd → prd-to-issues, with natural exit ramps between each step ("Ready to write the PRD?" / "Want to create issues?"). The user can bail at any point.
-
-The skills may be merged into a single chained skill or remain separate with Forge handling the flow.
-
-### Interactive No-Args Wizard
-
-Running `forge` with no arguments walks the user through the full workflow interactively:
-
-- What do you want to work on? (spec name or PRD number)
-- What mode? (once / afk)
-- How many iterations? (if afk)
-- Branch name?
-- Base branch?
-
-Uses `questionary` prompts to guide the user step by step.
-
-### Multiple Remote Sources
-
-Evolve `forge run --github` to support sources beyond GitHub (Linear, Jira, etc.), likely by expanding source flags or adding a provider flag.
-
-### PyPI Publishing
-
-Package and publish to PyPI for `pip install forge-orchestrator` distribution.
+See [GitHub issues labeled `roadmap`](https://github.com/elkinjosetm/prd-forge/labels/roadmap) for current ideas.
