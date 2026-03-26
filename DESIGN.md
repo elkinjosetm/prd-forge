@@ -143,15 +143,25 @@ Skills remain as Claude Code skills. They are not invoked by the CLI on day one 
 
 ---
 
-## Idea → Execution Pipeline
+## Pipeline
 
-Ideas can come from anywhere — a GitHub issue, a Jira ticket, a Slack thread, an MCP server, or just a conversation. Once an idea enters Forge's pipeline, it flows through these stages:
+Ideas can come from anywhere — a GitHub issue, a Jira ticket, a Slack thread, an MCP server, or just a conversation. Forge doesn't prescribe where ideas originate. The pipeline starts once you're ready to act on one:
 
-1. **`roadmap`** — Idea is captured as a GitHub issue with the `roadmap` label. This is the entry point into the tracked pipeline, regardless of where the idea originated.
-2. **Interview** — Stress-test the idea via `forge:interview`. Discussion happens on the roadmap issue.
-3. **`prd`** — Once interviewed, the roadmap issue is closed and a new issue is created with the `prd` label containing the full spec. The PRD links back to the roadmap issue for history.
-4. **Issues** — The PRD is broken into sub-issues (via `forge:issues`), either as local markdown files or GitHub sub-issues.
-5. **Execute** — `forge run` picks up the issues and implements them.
+1. **Interview** — Stress-test the idea via `/forge:interview`.
+2. **PRD** — Write the spec via `/forge:prd`. Saves to a local file (`.forge/<name>/prd.md`) or a GitHub issue labeled `prd`.
+3. **Issues** — Break the PRD into vertical slices via `/forge:issues`. Creates local markdown files or GitHub sub-issues.
+4. **Execute** — `forge run` picks up the issues and implements them sequentially.
+
+### Suggested practice: managing your idea backlog with GitHub labels
+
+For projects using GitHub issues, we recommend a label-driven flow to track ideas before they enter the pipeline:
+
+1. **Capture** — Create a GitHub issue with the `roadmap` label. This is the idea backlog entry, regardless of where the idea originated.
+2. **Interview** — Run `/forge:interview` on the idea. Discussion happens on the roadmap issue.
+3. **PRD** — Run `/forge:prd`. The roadmap issue is closed with a comment linking forward to the new PRD issue. The PRD issue is created with the `prd` label and links back to the roadmap issue for history.
+4. **Issues** — Run `/forge:issues`. Sub-issues are created and linked to the PRD issue.
+5. **Execute** — `forge run --github <prd_number>` implements the sub-issues. Each is closed on completion.
+6. **PR** — Forge pushes the branch and creates a PR. The PR body includes "Closes #prd_number", so the PRD issue is auto-closed when the PR merges.
 
 This keeps each artifact (idea, spec, implementation tickets) as a separate issue with a clear purpose and traceable lineage.
 

@@ -4,13 +4,18 @@ A CLI that drives PRD-driven development with Claude Code. You write the PRD, Fo
 
 ## Workflow
 
-1. **Idea** — Capture the idea as a GitHub issue labeled `roadmap`. Ideas can come from anywhere — Jira tickets, Slack threads, MCP servers, or just a conversation.
-2. **`/forge:interview`** — Stress-test the idea. Get grilled on the plan until it's solid.
-3. **`/forge:prd`** — Turn the validated idea into a PRD. Closes the roadmap issue and creates a new `prd`-labeled issue with the full spec.
-4. **`/forge:issues`** — Break the PRD into independently-grabbable issues (local markdown files or GitHub sub-issues).
-5. **`forge run`** — Execute the issues sequentially with Claude Code.
+Ideas can come from anywhere — Jira tickets, Slack threads, MCP servers, or just a conversation. The pipeline starts once you're ready to act on one:
 
-Steps 2–4 are Claude Code skills installed via `forge setup-skills`. Step 5 is the Forge CLI.
+1. **`/forge:interview`** — Stress-test the idea. Get grilled on the plan until it's solid.
+2. **`/forge:prd`** — Turn the validated idea into a PRD (local file or GitHub issue).
+3. **`/forge:issues`** — Break the PRD into independently-grabbable issues (local markdown files or GitHub sub-issues).
+4. **`forge run`** — Execute the issues sequentially with Claude Code.
+
+Steps 1–3 are Claude Code skills installed via `forge setup-skills`. Step 4 is the Forge CLI.
+
+### Suggested: managing your idea backlog
+
+For projects using GitHub issues, we recommend tracking ideas with a `roadmap` label. When an idea is ready, interview it, write the PRD (which closes the roadmap issue), break it into sub-issues, and execute. See [DESIGN.md](DESIGN.md#suggested-practice-managing-your-idea-backlog-with-github-labels) for the full flow.
 
 ## Installation
 
