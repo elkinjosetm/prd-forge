@@ -105,6 +105,82 @@ class TestLegacyCommandRemoval:
 
 
 class TestGitHubNaming:
+    def test_local_once_uses_slugged_branch_suggestion(self, monkeypatch) -> None:
+        prompts: list[str] = []
+
+        class FakeSource:
+            def __init__(self, name: str) -> None:
+                assert name == "Customer Onboarding"
+
+            def get_next_issue(self):
+                return type(
+                    "FakeLocalIssue",
+                    (),
+                    {"number": 7, "filename": "issue.md", "content": "Issue body"},
+                )()
+
+            def get_remaining_count(self) -> tuple[int, int]:
+                return (1, 3)
+
+            def get_prd_content(self) -> str:
+                return "PRD body"
+
+            @property
+            def spec_dir(self) -> str:
+                return ".forge/Customer Onboarding"
+
+        monkeypatch.setattr(cli, "LocalSource", FakeSource)
+        monkeypatch.setattr(
+            cli,
+            "_pre_execution",
+            lambda suggested_branch: (
+                prompts.append(suggested_branch) or (suggested_branch, "main")
+            ),
+        )
+        monkeypatch.setattr(cli, "run_interactive", lambda prompt: None)
+
+        cli._run_local("Customer Onboarding", cli.Mode.once, None)
+
+        assert prompts == ["forge/customer-onboarding"]
+
+    def test_local_once_falls_back_when_slug_is_empty(self, monkeypatch) -> None:
+        prompts: list[str] = []
+
+        class FakeSource:
+            def __init__(self, name: str) -> None:
+                assert name == "!!!"
+
+            def get_next_issue(self):
+                return type(
+                    "FakeLocalIssue",
+                    (),
+                    {"number": 7, "filename": "issue.md", "content": "Issue body"},
+                )()
+
+            def get_remaining_count(self) -> tuple[int, int]:
+                return (1, 3)
+
+            def get_prd_content(self) -> str:
+                return "PRD body"
+
+            @property
+            def spec_dir(self) -> str:
+                return ".forge/!!!"
+
+        monkeypatch.setattr(cli, "LocalSource", FakeSource)
+        monkeypatch.setattr(
+            cli,
+            "_pre_execution",
+            lambda suggested_branch: (
+                prompts.append(suggested_branch) or (suggested_branch, "main")
+            ),
+        )
+        monkeypatch.setattr(cli, "run_interactive", lambda prompt: None)
+
+        cli._run_local("!!!", cli.Mode.once, None)
+
+        assert prompts == ["forge/spec"]
+
     def test_github_once_uses_slugged_branch_suggestion(self, monkeypatch) -> None:
         prompts: list[str] = []
 

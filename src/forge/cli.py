@@ -148,7 +148,9 @@ def _run_local(name: str, mode: Mode, iterations_raw: str | None) -> None:
     parsed_iterations = _validate_iterations(mode, iterations_raw)
 
     source = LocalSource(name)
-    branch, base_branch = _pre_execution(f"forge/{name}")
+    local_slug = slugify_branch_component(name)
+    suggested_branch = f"forge/{local_slug}" if local_slug else "forge/spec"
+    branch, base_branch = _pre_execution(suggested_branch)
 
     if mode == Mode.once:
         issue = source.get_next_issue()
